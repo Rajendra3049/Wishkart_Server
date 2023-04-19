@@ -7,8 +7,8 @@ const productRoutes = express.Router();
 productRoutes.get("/", async (req, res) => {
   try {
     const queryParams = req.query;
-    const page = parseInt(queryParams.page) || 1;
-    const limit = parseInt(queryParams.limit) || 10;
+    // const page = parseInt(queryParams.page) || 1;
+    // const limit = parseInt(queryParams.limit) || 10;
 
     const queryObj = {};
 
@@ -34,6 +34,7 @@ productRoutes.get("/", async (req, res) => {
         $lte: parseFloat(queryParams.rating_lte),
       };
     }
+
     if (queryParams.discounted_price_gte && !queryParams.discounted_price_lte) {
       queryObj.discounted_price = {
         $gte: parseFloat(queryParams.discounted_price_gte),
@@ -72,17 +73,13 @@ productRoutes.get("/", async (req, res) => {
 
     let productData;
     if (Object.keys(queryParams).length) {
-      productData = await productModel
-        .find(queryObj)
-        .sort({ id: 1 })
-        .skip(startIndex)
-        .limit(limit);
+      productData = await productModel.find(queryObj).sort({ id: 1 });
+      // .skip(startIndex)
+      // .limit(limit);
     } else {
-      productData = await productModel
-        .find()
-        .sort({ id: 1 })
-        .skip(startIndex)
-        .limit(limit);
+      productData = await productModel.find().sort({ id: 1 });
+      // .skip(startIndex)
+      // .limit(limit);
     }
 
     if (productData.length == 0) {
