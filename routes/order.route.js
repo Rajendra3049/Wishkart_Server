@@ -5,7 +5,7 @@ const { cartModel } = require("../models/cart.model");
 const orderRoute = express.Router();
 
 orderRoute.get("/", async (req, res) => {
-  const userId = req.headers.userid;
+  const userId = req.headers.user_id;
   try {
     let orderData = await orderModel.find({
       userId: userId,

@@ -4,6 +4,17 @@ const { adminAuth } = require("../middlewares/adminAuth");
 
 const productRoutes = express.Router();
 
+productRoutes.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  try {
+    let productData = await productModel.findById((_id = id));
+    res.status(200).send(productData);
+  } catch (error) {
+    res.status(500).send({ msg: "Error in getting  product" });
+  }
+});
+
 productRoutes.get("/", async (req, res) => {
   try {
     const queryParams = req.query;
@@ -103,10 +114,10 @@ productRoutes.post("/", adminAuth, async (req, res) => {
   }
 });
 
-productRoutes.delete("/:id", adminAuth, async (req, res) => {
-  const { id } = req.params;
+productRoutes.delete("/:_id", adminAuth, async (req, res) => {
+  const { _id } = req.params;
   try {
-    let productData = await productModel.findById(id);
+    let productData = await productModel.findById(_id);
     if (productData) {
       await productModel.findByIdAndRemove(id);
       res.status(200).send({ msg: "product delete successfully" });
@@ -117,10 +128,10 @@ productRoutes.delete("/:id", adminAuth, async (req, res) => {
     res.status(500).send({ msg: "Error in deleting product" });
   }
 });
-productRoutes.patch("/:id", adminAuth, async (req, res) => {
-  const { id } = req.params;
+productRoutes.patch("/:_id", adminAuth, async (req, res) => {
+  const { _id } = req.params;
   try {
-    let productData = await productModel.findById(id);
+    let productData = await productModel.findById(_id);
     if (productData) {
       await productModel.findByIdAndUpdate(id, req.body);
       res.status(200).send({ msg: "Product update successfully" });
