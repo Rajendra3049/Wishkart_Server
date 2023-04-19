@@ -7,8 +7,8 @@ const productRoutes = express.Router();
 productRoutes.get("/", async (req, res) => {
   try {
     const queryParams = req.query;
-    // const page = parseInt(queryParams.page) || 1;
-    // const limit = parseInt(queryParams.limit) || 10;
+    const page = parseInt(queryParams.page) || 1;
+    const limit = parseInt(queryParams.limit) || 10;
 
     const queryObj = {};
 
