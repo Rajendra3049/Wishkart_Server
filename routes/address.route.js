@@ -59,12 +59,12 @@ addressRoute.patch("/:id", async (req, res) => {
 // addressRoute.delete();
 addressRoute.delete("/:id", async (req, res) => {
   const userId = req.headers.user_id;
-  const id = req.params.id;
-
+  const _id = req.params.id;
+  console.log(userId, _id);
   try {
-    let address = await addressModel.findOne({ id, userId });
+    let address = await addressModel.findOne({ _id, userId });
     if (address.length !== 0) {
-      await addressModel.findByIdAndRemove(id);
+      await addressModel.findByIdAndRemove(_id);
       res.status(200).send({ status: true, msg: "Address Deleted" });
     } else {
       res.status(404).send({ msg: "Not Found" });
