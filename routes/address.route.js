@@ -20,6 +20,7 @@ addressRoute.get("/", async (req, res) => {
 
 addressRoute.post("/", async (req, res) => {
   const userId = req.headers.user_id;
+  console.log(req.body);
   try {
     if (userId) {
       req.body.userId = userId;
@@ -47,7 +48,6 @@ addressRoute.patch("/:id", async (req, res) => {
   try {
     let address = await addressModel.findOne({ _id, userId });
     if (address.length !== 0) {
-      console.log(req.body);
       await addressModel.findByIdAndUpdate(_id, req.body);
       res.status(200).send({ status: true, msg: "Address Update" });
     } else {

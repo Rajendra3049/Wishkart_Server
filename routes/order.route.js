@@ -17,9 +17,9 @@ orderRoute.get("/", async (req, res) => {
 });
 
 orderRoute.post("/", async (req, res) => {
-  const userId = req.headers.userid;
-
-  const { user, address, amount, transactionID } = req.body;
+  const userId = req.headers.user_id;
+  const { user, address, amount } = req.body;
+  console.log(userId, user, address, amount);
   try {
     if (userId) {
       let cartData = await cartModel.find({
@@ -31,14 +31,21 @@ orderRoute.post("/", async (req, res) => {
       const month = date.getMonth() + 1;
       const year = date.getFullYear();
 
+      const idLength = 10;
+      let transactionId = "";
+      for (let i = 0; i < idLength; i++) {
+        const randomDigit = Math.floor(Math.random() * 10);
+        transactionId += randomDigit.toString();
+      }
+
       let orderData = {
         user,
         products: cartData,
         address,
         amount,
-        transactionID,
+        transactionID: transactionId,
         date: day + "/" + month + "/" + year,
-        userId: req.headers.userid,
+        userId: req.headers.user_id,
       };
 
       await orderModel.insertMany(orderData);
@@ -46,6 +53,7 @@ orderRoute.post("/", async (req, res) => {
       res.status(200).send({
         status: true,
         msg: "Order Placed successfully",
+        transactionID: transactionId,
       });
     } else {
       res
