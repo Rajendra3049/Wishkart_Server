@@ -27,7 +27,7 @@ cartRoute.post("/:id", async (req, res) => {
       await cartModel.findByIdAndUpdate((_id = alreadyExist[0]._id), {
         quantity: newQuantity,
       });
-      res.send({ status: false, msg: "Quantity Increase" });
+      res.send({ status: true, msg: "Quantity Increase" });
     } else {
       if (userId) {
         let data = { userId, quantity: 1, productId };
@@ -52,6 +52,7 @@ cartRoute.patch("/increase/:id", async (req, res) => {
 
   try {
     let product = await cartModel.findOne({ _id: cartProductId, userId });
+    console.log(product);
     if (product.length !== 0) {
       let newQuantity = product.quantity + 1;
       await cartModel.findByIdAndUpdate((_id = product._id), {
