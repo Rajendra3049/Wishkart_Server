@@ -42,12 +42,12 @@ addressRoute.post("/", async (req, res) => {
 // addressRoute.patch();
 addressRoute.patch("/:id", async (req, res) => {
   const userId = req.headers.user_id;
-  const id = req.params.id;
+  const _id = req.params.id;
 
   try {
-    let address = await addressModel.findOne({ id, userId });
+    let address = await addressModel.findOne({ _id, userId });
     if (address.length !== 0) {
-      await addressModel.findByIdAndUpdate(id, req.body);
+      await addressModel.findByIdAndUpdate(_id, req.body);
       res.status(200).send({ status: true, msg: "Address Update" });
     } else {
       res.status(404).send({ msg: "Not Found" });
@@ -60,7 +60,6 @@ addressRoute.patch("/:id", async (req, res) => {
 addressRoute.delete("/:id", async (req, res) => {
   const userId = req.headers.user_id;
   const _id = req.params.id;
-  console.log(userId, _id);
   try {
     let address = await addressModel.findOne({ _id, userId });
     if (address.length !== 0) {
