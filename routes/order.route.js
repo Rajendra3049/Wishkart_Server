@@ -1,15 +1,21 @@
 const express = require("express");
 const { orderModel } = require("../models/order.model");
 const { cartModel } = require("../models/cart.model");
+const { productModel } = require("../models/product.model");
 
 const orderRoute = express.Router();
 
 orderRoute.get("/", async (req, res) => {
   const userId = req.headers.user_id;
   try {
-    let orderData = await orderModel.find({
-      userId: userId,
-    });
+    let orderData = await orderModel
+      .find({
+        userId: userId,
+      })
+      .populate({
+        path: "products.productId",
+        model: productModel,
+      });
     res.status(200).send(orderData);
   } catch (error) {
     res.status(500).send({ msg: "Error in getting order data", error: error });
