@@ -69,8 +69,95 @@ adminRoutes.get("/dashboard", adminAuth, async (req, res) => {
 adminRoutes.get("/orders", async (req, res) => {
   try {
     let orders = await orderModel.find();
+    const result = await orderModel.aggregate([
+      {
+        $group: {
+          _id: "$date",
+          count: { $sum: { $size: "$products" } },
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          date: "$_id",
+          count: 1,
+          totalAmount: 1,
+        },
+      },
+    ]);
 
-    res.status(200).send({ orders: orders });
+    const graphData = {};
+    result.forEach((item) => {
+      graphData[item.date] = {
+        count: item.count,
+        totalAmount: item.totalAmount,
+      };
+    });
+
+    const dataDateWise = {};
+
+    const DateWise = await orderModel.aggregate([
+      {
+        $group: {
+          _id: "$date",
+          products: { $push: "$products" },
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          date: "$_id",
+          products: 1,
+          totalAmount: 1,
+        },
+      },
+    ]);
+
+    DateWise.forEach((item) => {
+      dataDateWise[item.date] = {
+        products: item.products.flat(),
+        totalAmount: item.totalAmount,
+      };
+    });
+
+    const orderData = {};
+    orderModel
+      .aggregate([
+        {
+          $lookup: {
+            from: "products",
+            localField: "products.productId",
+            foreignField: "_id",
+            as: "products",
+          },
+        },
+        {
+          $group: {
+            _id: "$userId",
+            data: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            data: 1,
+          },
+        },
+      ])
+      .then((usersOrderData) => {
+        const orderData = usersOrderData.map((item) => item.data);
+
+        res.status(200).send({
+          graphData: graphData,
+          dataDateWise: dataDateWise,
+          orderData: orderData,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   } catch (error) {
     res.status(500).send({ msg: "Error in getting orders" });
   }
